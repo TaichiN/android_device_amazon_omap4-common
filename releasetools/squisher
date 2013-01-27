@@ -6,7 +6,10 @@
 
 . $ANDROID_BUILD_TOP/vendor/cm/tools/functions
 
-echo -e $CL_CYN"OTTER SQUISHER:"$CL_RST;
+PRODUCT_DEVICE=`sed -n -e'/ro\.product.device/s/^.*=//p' $OUT/system/build.prop`
+PRODUCT_DEVICE=`echo $PRODUCT_DEVICE | tr '[:lower:]' '[:upper:]'`
+
+echo -e $CL_CYN"$PRODUCT_DEVICE SQUISHER:"$CL_RST;
 echo -e $CL_CYN"================"$CL_RST;
 
 OUT_TARGET_HOST=`uname -a | grep Darwin`
