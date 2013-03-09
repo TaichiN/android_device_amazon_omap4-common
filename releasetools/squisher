@@ -1,8 +1,16 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Squish an otapackage for distribution
 # cyanogen w/ AOKP changes
 #
+
+. $ANDROID_BUILD_TOP/vendor/cm/tools/functions
+
+PRODUCT_DEVICE=`sed -n -e'/ro\.product.device/s/^.*=//p' $OUT/system/build.prop`
+PRODUCT_DEVICE=`echo $PRODUCT_DEVICE | tr '[:lower:]' '[:upper:]'`
+
+echo -e $CL_CYN"$PRODUCT_DEVICE SQUISHER:"$CL_RST;
+echo -e $CL_CYN"================"$CL_RST;
 
 OUT_TARGET_HOST=`uname -a | grep Darwin`
 if [ -z "$OUT_TARGET_HOST" ]
@@ -19,7 +27,7 @@ else
 fi
 
 if [ -z "$OUT" -o ! -d "$OUT" ]; then
-	echo "ERROR: $0 only works with a full build environment. $OUT should exist."
+	echo -e $CL_RED"ERROR: $0 only works with a full build environment. $OUT should exist."$CL_RST
 	exit 1
 fi
 
@@ -31,7 +39,7 @@ else
     OTAPACKAGE=$OUT/$TARGET_PRODUCT-ota-$TARGET_BUILD_VARIANT.$USER.zip
 fi
 if [ ! -f "$OTAPACKAGE" ]; then
-	echo "$OTAPACKAGE doesn't exist!";
+	echo -e $CL_RED"$OTAPACKAGE doesn't exist!"$CL_RST;
 	exit 1
 fi
 
@@ -44,7 +52,6 @@ printf "Sanitizing environment..."
 rm -rf $REPACK
 mkdir -p $REPACK
 echo
-
 
 # Unpack the otapackage and opticharge all apks
 mkdir $REPACK/ota
@@ -80,7 +87,6 @@ $SED -i \
 	-e '/ro\.build\.type/s/eng/user/' \
 	$REPACK/ota/system/build.prop
 
-
 # Delete unnecessary binaries
 ( cd $REPACK/ota/system/bin; echo $DELETE_BINS | xargs rm -f; )
 
@@ -98,7 +104,6 @@ if [ -f $ANDROID_BUILD_TOP/vendor/cm/LICENSE ];
 then
 MODVERSION=`sed -n -e'/ro\.cm\.version/s/^.*=//p' $REPACK/ota/system/build.prop`
 OUTFILE=$OUT/cm-$MODVERSION.zip
-echo MODVERSION: $MODVERSION
 elif [ -f $ANDROID_BUILD_TOP/vendor/aokp/vendorsetup.sh ];
 then
 VERSION=`sed -n -e'/ro.aokp.version/s/^.*=//p' $REPACK/ota/system/build.prop`
@@ -107,6 +112,7 @@ OUTFILE=$OUT/JB-$MODVERSION.zip
 else
 OUTFILE=$OUT/$TARGET_PRODUCT-JB-$REALDATE.zip
 fi
+echo -e $CL_CYN"MODVERSION: $MODVERSION"$CL_RST
 
 # Pack it up and sign
 printf "Zipping package..."
@@ -129,7 +135,7 @@ img=`basename $OUTFILE`
 cd `dirname $OUTFILE`
 $MD5 $img >$img.md5sum
 echo
-echo "Package complete: $OUTFILE"
+echo -e $CL_GRN"Package complete: $OUTFILE"$CL_RST
 cat $img.md5sum
 echo
 )
