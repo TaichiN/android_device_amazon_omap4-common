@@ -63,8 +63,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.sys.usb.config=mtp,adb \
     persist.sys.root_access=3 \
     ro.bq.gpu_to_cpu_unsupported=1 \
-    media.stagefright.cache-params=18432/20480/15 \
-    ro.disable.recovery.updater=1
+    media.stagefright.cache-params=18432/20480/15
 
 PRODUCT_CHARACTERISTICS := tablet,nosdcard
 
